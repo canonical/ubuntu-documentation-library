@@ -12,6 +12,7 @@ import sys
 project = 'Ubuntu documentation library'
 author = 'Canonical Group Ltd'
 copyright = "%s, %s" % (datetime.date.today().year, author)
+html_favicon = '.sphinx/_static/favicon.png'
 
 extensions = [
     'sphinx_reredirects'
