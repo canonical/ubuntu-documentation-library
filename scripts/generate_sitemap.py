@@ -6,9 +6,12 @@ import datetime
 
 PROJECT_URL = 'https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/'
 SUBPROJECT_URL = 'https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=50'
+
+# Ensure an RTD access token is exported and available in the build environment
 TOKEN = os.environ["TOKEN"]
 
 def main():
+    """Generates a sitemap from RTD for the Ubuntu documentation library."""
 
     template_sitemap = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
 
