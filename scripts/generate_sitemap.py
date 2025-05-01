@@ -3,6 +3,7 @@
 import requests
 import os
 import datetime
+from requests.exceptions import RequestException
 
 PROJECT_URL = 'https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/'
 SUBPROJECT_URL = 'https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=50'
@@ -18,6 +19,7 @@ def main():
     # Get and update main project data
     project = authorised_get(PROJECT_URL, TOKEN)
     project_data = project.json()
+
     template_sitemap = "{}\n{}".format(template_sitemap, template_sitemap_section("https://documentation.ubuntu.com/en/latest/", datetime.datetime.fromisoformat(project_data["modified"]).strftime("%Y-%m-%d")))
 
     # Get and update subproject data
@@ -45,8 +47,11 @@ def template_sitemap_section(loc, lastmod):
 def authorised_get(url, token):
 
     HEADERS = {'Authorization': f'token {token}'}
-    response = requests.get(url, headers=HEADERS)
-
+    try:
+        response = requests.get(url, headers=HEADERS, timeout=10)
+    except RequestException as e:
+        print(f"Failed query_api(): {url}")
+        raise SystemExit(e)
     return response
 
 if __name__ == "__main__":
