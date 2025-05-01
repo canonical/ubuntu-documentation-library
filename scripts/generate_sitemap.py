@@ -19,7 +19,7 @@ def main():
     # Get and update main project data
     project = authorised_get(PROJECT_URL, TOKEN)
     project_data = project.json()
-
+    print(project_data)
     template_sitemap = "{}\n{}".format(template_sitemap, template_sitemap_section("https://documentation.ubuntu.com/en/latest/", datetime.datetime.fromisoformat(project_data["modified"]).strftime("%Y-%m-%d")))
 
     # Get and update subproject data
