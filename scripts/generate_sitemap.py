@@ -8,7 +8,7 @@ PROJECT_URL = 'https://readthedocs.com/api/v3/projects/canonical-ubuntu-document
 SUBPROJECT_URL = 'https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=50'
 
 # Ensure an RTD access token is exported and available in the build environment
-TOKEN = os.environ["TOKEN"]
+TOKEN = os.environ.get("TOKEN")
 
 def main():
     """Generates a sitemap from RTD for the Ubuntu documentation library."""
