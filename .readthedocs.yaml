@@ -11,8 +11,9 @@ build:
   tools:
     python: "3.11"
   jobs:
-    pre_build:
+    post_build:
       - python scripts/generate_sitemap.py
+      - mv -f sitemap.xml _readthedocs/html/sitemap.xml
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
