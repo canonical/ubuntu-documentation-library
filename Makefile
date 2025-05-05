@@ -57,6 +57,9 @@ woke:
 	type woke >/dev/null 2>&1 || { snap install woke; exit 1; }
 	woke *.rst **/*.rst -c https://github.com/canonical-web-and-design/Inclusive-naming/raw/main/config.yml
 
+sitemap:
+	. $(VENV) ; python3 scripts/generate_sitemap.py
+
 .PHONY: help Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
