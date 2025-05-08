@@ -39,13 +39,13 @@ def main():
             continue
 
         logging.debug(
-            f"Checking existence of sitemap for {item["child"]["urls"]["documentation"]}"
+            f'Checking existence of sitemap for {item["child"]["urls"]["documentation"]}'
         )
         code = requests.get(
-            f"{item["child"]["urls"]["documentation"]}sitemap.xml"
+            f'{item["child"]["urls"]["documentation"]}sitemap.xml'
         ).status_code
         logging.debug(
-            f"{item["child"]["urls"]["documentation"]}sitemap.xml STATUS={str(code)}"
+            f'{item["child"]["urls"]["documentation"]}sitemap.xml STATUS={str(code)}'
         )
         if code == 200:
 
@@ -53,10 +53,10 @@ def main():
                 item["child"]["modified"]
             ).strftime("%Y-%m-%d")
             children.update(
-                {f"{item["child"]["urls"]["documentation"]}sitemap.xml": modified}
+                {f'{item["child"]["urls"]["documentation"]}sitemap.xml': modified}
             )
             logging.debug(
-                f"Adding {item["child"]["urls"]["documentation"]} to the sitemap"
+                f'Adding {item["child"]["urls"]["documentation"]} to the sitemap'
             )
 
     for key, value in children.items():
