@@ -1,0 +1,22 @@
+#
+name: Rebuild site
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+    # Builds weekly to capture updated projects
+  workflow_dispatch:
+    # Manual trigger
+
+jobs:
+  rtd_rebuild:
+    runs-on: ubuntu-latest
+    env:
+      TOKEN: ${{ secrets.TOKEN }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: trigger build
+      run: |
+        chmod +x ./scripts/rebuild_project.py
+        python3 ./scripts/rebuild_project.py
