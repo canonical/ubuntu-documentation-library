@@ -14,7 +14,6 @@ PROJECT_URL = (
 SUBPROJECT_URL = "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=50"
 TOKEN = os.environ["TOKEN"]
 TIMEOUT = 10  # seconds
-EXCEPTIONS_LIST = ["https://documentation.ubuntu.com/security-team/en/latest/"]
 
 # Check if debugging
 if os.getenv("DEBUGGING"):
@@ -35,28 +34,31 @@ def main():
 
     for item in subproject_data["results"]:
 
-        if item["child"]["urls"]["documentation"] in EXCEPTIONS_LIST:
-            continue
+        if item["child"]["privacy_level"] == "public":
 
-        logging.debug(
-            f'Checking existence of sitemap for {item["child"]["urls"]["documentation"]}'
-        )
-        code = requests.get(
-            f'{item["child"]["urls"]["documentation"]}sitemap.xml'
-        ).status_code
-        logging.debug(
-            f'{item["child"]["urls"]["documentation"]}sitemap.xml STATUS={str(code)}'
-        )
-        if code == 200:
-
-            modified = datetime.datetime.fromisoformat(
-                item["child"]["modified"]
-            ).strftime("%Y-%m-%d")
-            children.update(
-                {f'{item["child"]["urls"]["documentation"]}sitemap.xml': modified}
-            )
             logging.debug(
-                f'Adding {item["child"]["urls"]["documentation"]} to the sitemap'
+                f'Checking existence of sitemap for {item["child"]["urls"]["documentation"]}'
+            )
+            code = requests.get(
+                f'{item["child"]["urls"]["documentation"]}sitemap.xml'
+            ).status_code
+            logging.debug(
+                f'{item["child"]["urls"]["documentation"]}sitemap.xml STATUS={str(code)}'
+            )
+            if code == 200:
+
+                modified = datetime.datetime.fromisoformat(
+                    item["child"]["modified"]
+                ).strftime("%Y-%m-%d")
+                children.update(
+                    {f'{item["child"]["urls"]["documentation"]}sitemap.xml': modified}
+                )
+                logging.debug(
+                    f'Adding {item["child"]["urls"]["documentation"]} to the sitemap'
+                )
+        else:
+            logging.debug(
+                f'{item["child"]["urls"]["documentation"]} is private'
             )
 
     for key, value in children.items():
