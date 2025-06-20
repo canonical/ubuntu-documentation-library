@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 
 # NOTE: This script requires an RTD API token to be provided through the environment to function
+#
+# Create an API token https://app.readthedocs.com/accounts/tokens/
+# export TOKEN=<token>
 
 import requests
 import os
@@ -15,15 +18,17 @@ SUBPROJECT_URL = "https://readthedocs.com/api/v3/projects/canonical-ubuntu-docum
 TOKEN = os.environ["TOKEN"]
 TIMEOUT = 10  # seconds
 
-# Check if debugging
+SITEMAP_EXCEPTIONS = [
+    "https://documentation.ubuntu.com/security-team/"
+]
+
+# Check if debugging: export DEBUGGING=1
 if os.getenv("DEBUGGING"):
     logging.basicConfig(level=logging.DEBUG)
 
 
 def main():
-
-    # print(authorised_get("https://documentation.ubuntu.com/dedicated-snap-store/", TOKEN).status_code)
-    # return
+    """Generates a sitemap pointing to the sitemaps of subprojects of the Ubuntu Documentation Library"""
 
     template_sitemap = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
 
@@ -33,6 +38,12 @@ def main():
     children = {}
 
     for item in subproject_data["results"]:
+
+        if item["child"]["urls"]["documentation"] in SITEMAP_EXCEPTIONS:
+            logging.debug(
+                f'{item["child"]["urls"]["documentation"]} is listed in exceptions'
+            )
+            pass
 
         logging.debug(
             f'Checking existence of sitemap for {item["child"]["urls"]["documentation"]}'
@@ -72,12 +83,16 @@ def main():
 
 # Format URL and modification date into sitemap compliant string
 def template_sitemap_section(loc, lastmod):
+    """Templates the URL and lastmod date into a string for use in a sitemap"""
+
     template = f"<url>\n<loc>{loc}</loc>\n<lastmod>{lastmod}</lastmod>\n</url>"
     return template
 
 
 # GET query a URL with an auth token
 def authorised_get(url, token):
+    """Uses a token to auth and GET a URL"""
+
 
     logging.debug(f"Querying {url}")
     HEADERS = {"Authorization": f"token {token}"}
