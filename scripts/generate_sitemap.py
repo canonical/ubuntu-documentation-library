@@ -34,32 +34,27 @@ def main():
 
     for item in subproject_data["results"]:
 
-        if item["child"]["privacy_level"] == "public":
+        logging.debug(
+            f'Checking existence of sitemap for {item["child"]["urls"]["documentation"]}'
+        )
+        code = requests.get(
+            f'{item["child"]["urls"]["documentation"]}sitemap.xml'
+        ).status_code
+        logging.debug(
+            f'{item["child"]["urls"]["documentation"]}sitemap.xml STATUS={str(code)}'
+        )
+        if code == 200:
 
-            logging.debug(
-                f'Checking existence of sitemap for {item["child"]["urls"]["documentation"]}'
+            modified = datetime.datetime.fromisoformat(
+                item["child"]["modified"]
+            ).strftime("%Y-%m-%d")
+            children.update(
+                {f'{item["child"]["urls"]["documentation"]}sitemap.xml': modified}
             )
-            code = requests.get(
-                f'{item["child"]["urls"]["documentation"]}sitemap.xml'
-            ).status_code
             logging.debug(
-                f'{item["child"]["urls"]["documentation"]}sitemap.xml STATUS={str(code)}'
+                f'Adding {item["child"]["urls"]["documentation"]} to the sitemap'
             )
-            if code == 200:
 
-                modified = datetime.datetime.fromisoformat(
-                    item["child"]["modified"]
-                ).strftime("%Y-%m-%d")
-                children.update(
-                    {f'{item["child"]["urls"]["documentation"]}sitemap.xml': modified}
-                )
-                logging.debug(
-                    f'Adding {item["child"]["urls"]["documentation"]} to the sitemap'
-                )
-        else:
-            logging.debug(
-                f'{item["child"]["urls"]["documentation"]} is private'
-            )
 
     for key, value in children.items():
         template_sitemap = "{}\n{}".format(
