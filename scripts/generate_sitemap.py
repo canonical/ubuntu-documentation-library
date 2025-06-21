@@ -30,7 +30,7 @@ if os.getenv("DEBUGGING"):
 def main():
     """Generates a sitemap pointing to the sitemaps of subprojects of the Ubuntu Documentation Library"""
 
-    template_sitemap = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+    template_sitemap = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
     # Get and update subproject data
     subprojects = authorised_get(SUBPROJECT_URL, TOKEN)
@@ -76,7 +76,7 @@ def main():
     try:
         logging.debug("writing sitemap")
         sitemap = open("sitemap.xml", "w")
-        sitemap.write(f"{template_sitemap}\n</urlset>")
+        sitemap.write(f"{template_sitemap}\n</sitemapindex>")
     except Exception as e:
         raise e
 
@@ -85,7 +85,7 @@ def main():
 def template_sitemap_section(loc, lastmod):
     """Templates the URL and lastmod date into a string for use in a sitemap"""
 
-    template = f"<url>\n<loc>{loc}</loc>\n<lastmod>{lastmod}</lastmod>\n</url>"
+    template = f"<sitemap>\n<loc>{loc}</loc>\n<lastmod>{lastmod}</lastmod>\n</sitemap>"
     return template
 
 
