@@ -25,6 +25,4 @@ html_extra_path = ["sitemap.xml", "robots.txt"]
 # For example: "explanation/old-name.html": "../how-to/prettify.html",
 redirects = {
     "index": "https://docs.ubuntu.com",
-    "dedicated-snap-store": "https://ubuntu.com/internet-of-things/appstore/docs/",
-    "dedicated-snap-store/*": "https://ubuntu.com/internet-of-things/appstore/docs/page/$source",
 }
