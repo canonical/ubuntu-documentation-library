@@ -1,5 +1,4 @@
 User-agent: *
-
-Disallow: # Allow everything
+Allow: /
 
 Sitemap: https://documentation.ubuntu.com/latest/sitemap.xml
