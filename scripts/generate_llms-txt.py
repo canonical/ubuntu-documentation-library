@@ -119,10 +119,7 @@ def create_main_llms_txt(llms_urls):
         for version in llms_urls[item].keys():
             logging.debug(f"Processing version: {version}")
             url = llms_urls[item][version]
-            if version == "latest":
-                lines.append(f"- Current documentation: {url}")
-            else:
-                lines.append(f"- {version} documentation: {url}")
+            lines.append(f"- [{item} {version} documentation]({url})")
 
     try:
         logging.debug("Writing llms.txt")
