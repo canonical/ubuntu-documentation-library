@@ -9,14 +9,17 @@ import requests
 import os
 import datetime
 import logging
+import yaml
 from requests.exceptions import RequestException
 
 PROJECT_URL = (
     "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/"
 )
 SUBPROJECT_URL = "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=50"
-TOKEN = os.environ["TOKEN"]
+TOKEN = "b6888767c56984267f8f7ae4c673ff82c3b80891"
+#TOKEN = os.environ["TOKEN"]
 TIMEOUT = 10  # seconds
+EXTRA_ENTRIES_FILE = os.path.join(os.path.dirname(__file__), "../custom_llms_entries.yml")
 
 EXCEPTIONS = [
     "https://documentation.ubuntu.com/security-team/"
@@ -39,12 +42,13 @@ def scan_subprojects():
         for item in data["results"]:
             doc_url = item["child"]["urls"]["documentation"]
             name = item["child"]["name"]
+            version = item["child"]["default_version"]
 
             if doc_url in EXCEPTIONS:
                 logging.debug(f"{doc_url} is listed in exceptions, skipping")
                 continue
 
-            subprojects[name] = doc_url
+            subprojects[name] = {version: doc_url}
             logging.debug(f"Found subproject: {name} -> {doc_url}")
 
         url = data.get("next")
@@ -54,11 +58,13 @@ def scan_subprojects():
 def find_llms_txt(subproject_urls):
     """Check which subprojects have an LLMS.txt file and return a list of URLs if LLMS.txt files exist"""
 
-    llms_urls = []
+    llms_urls = {}
 
-    for name, doc_url in subproject_urls.items():
-        llms_url = f"{doc_url}llms.txt"
-        logging.debug(f"Checking existence of llms.txt for {name}: {llms_url}")
+    for name in subproject_urls.keys():
+        for version, doc_url in subproject_urls[name].items():
+            llms_url = f"{doc_url}llms.txt"
+            version = version
+            logging.debug(f"Checking existence of llms.txt for {name} ({version}): {llms_url}")
 
         try:
             code = requests.get(llms_url, timeout=TIMEOUT, allow_redirects=False).status_code
@@ -69,27 +75,54 @@ def find_llms_txt(subproject_urls):
         logging.debug(f"{llms_url} STATUS={code}")
 
         if code == 200:
-            llms_urls.append((name, llms_url))
-            logging.debug(f"Adding {name} llms.txt to the list")
+            llms_urls[name] = {version: llms_url}
+            logging.debug(f"Adding {name} ({version}) llms.txt to the list")
 
     return llms_urls
+
+
+def add_custom_entries(file, llms_urls):
+    """Takes a YAML file and adds custom entries to the llms.txt file"""
+
+    logging.debug(f"Loading extra entries from {file}")
+
+    with open(file, "r") as f:
+        data = yaml.safe_load(f)
+
+
+    logging.debug(f"Loading {data}")
+
+    for item in data:
+        if item not in llms_urls:
+            llms_urls[item] = {}
+        for version in data[item]:
+            llms_urls[item][version] = data[item][version]
+
+    return llms_urls
+
 
 def create_main_llms_txt(llms_urls):
     """Create a LLMS.txt file for the main project containing an inventory of all subproject LLMS.txt files"""
 
-    sorted_urls = sorted(llms_urls, key=lambda x: x[0].lower())
+    logging.debug(f"creating file from: {llms_urls}")
 
     lines = [
         "# Ubuntu documentation library",
         "",
         "> The Ubuntu documentation library is an index of documentation for Ubuntu and related Canonical projects.",
-        "",
-        "## Documentation",
-        "",
     ]
 
-    for name, url in sorted_urls:
-        lines.append(f"- [{name}]({url})")
+    for item in llms_urls.keys():
+        logging.debug(f"Processing item: {item}")
+        lines.append(f"")
+        lines.append(f"## {item}")
+        for version in llms_urls[item].keys():
+            logging.debug(f"Processing version: {version}")
+            url = llms_urls[item][version]
+            if version == "latest":
+                lines.append(f"- Current documentation: {url}")
+            else:
+                lines.append(f"- {version} documentation: {url}")
 
     try:
         logging.debug("Writing llms.txt")
@@ -97,6 +130,7 @@ def create_main_llms_txt(llms_urls):
             f.write("\n".join(lines) + "\n")
     except Exception as e:
         raise e
+    
 
 
 def main():
@@ -104,6 +138,7 @@ def main():
 
     subprojects = scan_subprojects()
     llms_urls = find_llms_txt(subprojects)
+    llms_urls = add_custom_entries(EXTRA_ENTRIES_FILE, llms_urls)
     create_main_llms_txt(llms_urls)
 
 

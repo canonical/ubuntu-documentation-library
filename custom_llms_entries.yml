@@ -1,0 +1,5 @@
+---
+ custom:
+   version: "https://documentation.ubuntu.com/some-docs/1.0/llms.txt"
+ Juju:
+   2.9: "https://documentation.ubuntu.com/juju/2.9/llms.txt"
