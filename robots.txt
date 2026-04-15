@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://documentation.ubuntu.com/latest/sitemap.xml
+Sitemap: https://documentation.ubuntu.com/doc-sitemap.xml

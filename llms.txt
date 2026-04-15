@@ -1,0 +1,12 @@
+# Ubuntu documentation library
+
+> The Ubuntu documentation library is an index of documentation for Ubuntu and related Canonical projects.
+
+## Juju
+- [Juju 3.6 documentation](https://documentation.ubuntu.com/juju/3.6/llms.txt)
+
+## Ubuntu for Developers
+- [Ubuntu for Developers latest documentation](https://documentation.ubuntu.com/ubuntu-for-developers/llms.txt)
+
+## Ubuntu Project
+- [Ubuntu Project latest documentation](https://documentation.ubuntu.com/project/llms.txt)

@@ -15,7 +15,7 @@ from requests.exceptions import RequestException
 PROJECT_URL = (
     "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/"
 )
-SUBPROJECT_URL = "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=50"
+SUBPROJECT_URL = "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=75"
 TOKEN = "b6888767c56984267f8f7ae4c673ff82c3b80891"
 #TOKEN = os.environ["TOKEN"]
 TIMEOUT = 10  # seconds
@@ -89,6 +89,9 @@ def add_custom_entries(file, llms_urls):
     with open(file, "r") as f:
         data = yaml.safe_load(f)
 
+    if data == None:
+        logging.debug(f"No data found in {file}")
+        return llms_urls
 
     logging.debug(f"Loading {data}")
 
