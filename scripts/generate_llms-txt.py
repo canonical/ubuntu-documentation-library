@@ -16,8 +16,7 @@ PROJECT_URL = (
     "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/"
 )
 SUBPROJECT_URL = "https://readthedocs.com/api/v3/projects/canonical-ubuntu-documentation-library/subprojects/?limit=75"
-TOKEN = "b6888767c56984267f8f7ae4c673ff82c3b80891"
-#TOKEN = os.environ["TOKEN"]
+TOKEN = os.environ["TOKEN"]
 TIMEOUT = 10  # seconds
 EXTRA_ENTRIES_FILE = os.path.join(os.path.dirname(__file__), "../custom_llms_entries.yml")
 
