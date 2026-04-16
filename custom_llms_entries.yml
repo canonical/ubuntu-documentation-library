@@ -1,3 +1,6 @@
 ---
-#  custom:
-#    version: "https://documentation.ubuntu.com/some-docs/1.0/llms.txt"
+#  example-grouping:
+#    heading: "Enterprise Store"
+#    versions:
+#      1.0.0: "https://ubuntu.com/enterprise-store/docs/"
+#      2.0.0: "NOTWORKING"

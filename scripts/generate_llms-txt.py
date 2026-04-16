@@ -62,7 +62,6 @@ def find_llms_txt(subproject_urls):
     for name in subproject_urls.keys():
         for version, doc_url in subproject_urls[name].items():
             llms_url = f"{doc_url}llms.txt"
-            version = version
             logging.debug(f"Checking existence of llms.txt for {name} ({version}): {llms_url}")
 
         try:
@@ -94,11 +93,19 @@ def add_custom_entries(file, llms_urls):
 
     logging.debug(f"Loading {data}")
 
-    for item in data:
-        if item not in llms_urls:
-            llms_urls[item] = {}
-        for version in data[item]:
-            llms_urls[item][version] = data[item][version]
+    for key in data.keys():
+        product = data[key]["heading"]
+        if product not in llms_urls:
+            llms_urls[product] = {}
+        for version in data[key]["versions"]:
+            llms_url = data[key]["versions"][version]
+            try:
+                code = requests.get(llms_url, timeout=TIMEOUT, allow_redirects=False).status_code
+            except RequestException:
+                logging.debug(f"Request failed for {llms_url}")
+                continue
+            if code == 200:
+                llms_urls[product][version] = llms_url
 
     return llms_urls
 
@@ -118,7 +125,12 @@ def create_main_llms_txt(llms_urls):
         logging.debug(f"Processing item: {item}")
         lines.append(f"")
         lines.append(f"## {item}")
+        if "latest" in llms_urls[item]:
+            logging.debug(f"Adding latest version for {item}")
+            lines.append(f"- [{item} latest documentation]({llms_urls[item]['latest']})")
         for version in llms_urls[item].keys():
+            if version == "latest":
+                continue
             logging.debug(f"Processing version: {version}")
             url = llms_urls[item][version]
             lines.append(f"- [{item} {version} documentation]({url})")
