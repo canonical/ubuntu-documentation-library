@@ -28,7 +28,7 @@ EXCEPTIONS = [
 if os.getenv("DEBUGGING"):
     logging.basicConfig(level=logging.DEBUG)
 
-def scan_subprojects():
+def scan_subprojects() -> dict:
     """Create list of subprojects with URLs for main version"""
 
     subprojects = {}
@@ -54,7 +54,7 @@ def scan_subprojects():
 
     return subprojects
 
-def find_llms_txt(subproject_urls):
+def find_llms_txt(subproject_urls: dict) -> dict:
     """Check which subprojects have an LLMS.txt file and return a list of URLs if LLMS.txt files exist"""
 
     llms_urls = {}
@@ -73,13 +73,29 @@ def find_llms_txt(subproject_urls):
         logging.debug(f"{llms_url} STATUS={code}")
 
         if code == 200:
-            llms_urls[name] = {version: llms_url}
+            llms_urls[name] = {version: {"url": llms_url, "description": ""}}
             logging.debug(f"Adding {name} ({version}) llms.txt to the list")
 
     return llms_urls
 
+def add_descriptions(llms_urls: dict) -> dict:
+    """Checks the LLMS.txt files for descriptions and adds them to the dictionary"""
 
-def add_custom_entries(file, llms_urls):
+    for product in llms_urls.keys():
+        for version in llms_urls[product].keys():
+            try:
+                response = requests.get(llms_urls[product][version]["url"], timeout=TIMEOUT)
+                response.raise_for_status()
+                lines = response.text.splitlines()
+                description = lines[2] if len(lines) > 2 else ""
+                llms_urls[product][version] = {"url": llms_urls[product][version]["url"], "description": description[2:] if description.startswith("> ") else description}
+            except RequestException:
+                logging.debug(f"Failed to get description for {product} ({version}) at {llms_urls[product][version]['url']}")
+                llms_urls[product][version] = {"url": llms_urls[product][version]["url"], "description": ""}
+
+    return llms_urls
+
+def add_custom_entries(file: str, llms_urls: dict) -> dict:
     """Takes a YAML file and adds custom entries to the llms.txt file"""
 
     logging.debug(f"Loading extra entries from {file}")
@@ -93,24 +109,28 @@ def add_custom_entries(file, llms_urls):
 
     logging.debug(f"Loading {data}")
 
-    for key in data.keys():
-        product = data[key]["heading"]
+    for item in data["projects"]:
+        logging.debug(f"assessing {item}")
+        product = item["name"]
+        versions = item["versions"].keys()
         if product not in llms_urls:
             llms_urls[product] = {}
-        for version in data[key]["versions"]:
-            llms_url = data[key]["versions"][version]
+        for version in versions:
+            llms_url = item["versions"][version]["url"]
+            description = ""
+            if "description" in item["versions"][version]:
+                description = item["versions"][version]["description"]
             try:
                 code = requests.get(llms_url, timeout=TIMEOUT, allow_redirects=False).status_code
             except RequestException:
                 logging.debug(f"Request failed for {llms_url}")
                 continue
             if code == 200:
-                llms_urls[product][version] = llms_url
+                llms_urls[product][version] = {"url": llms_url, "description": description}
 
     return llms_urls
 
-
-def create_main_llms_txt(llms_urls):
+def create_main_llms_txt(llms_urls: dict) -> None:
     """Create a LLMS.txt file for the main project containing an inventory of all subproject LLMS.txt files"""
 
     logging.debug(f"creating file from: {llms_urls}")
@@ -127,13 +147,17 @@ def create_main_llms_txt(llms_urls):
         lines.append(f"## {item}")
         if "latest" in llms_urls[item]:
             logging.debug(f"Adding latest version for {item}")
-            lines.append(f"- [{item} latest documentation]({llms_urls[item]['latest']})")
+            lines.append(f"- [{item} latest documentation]({llms_urls[item]['latest']['url']}): {llms_urls[item]['latest']['description']}")
         for version in llms_urls[item].keys():
             if version == "latest":
                 continue
             logging.debug(f"Processing version: {version}")
-            url = llms_urls[item][version]
-            lines.append(f"- [{item} {version} documentation]({url})")
+            url = llms_urls[item][version]["url"]
+            description = llms_urls[item][version]["description"]
+            if description == "":
+                lines.append(f"- [{item} {version} documentation]({url})")
+            else:
+                lines.append(f"- [{item} {version} documentation]({url}): {description}")
 
     try:
         logging.debug("Writing llms.txt")
@@ -141,14 +165,13 @@ def create_main_llms_txt(llms_urls):
             f.write("\n".join(lines) + "\n")
     except Exception as e:
         raise e
-    
-
 
 def main():
     """Generates an llms.txt pointing to the llms.txt files of subprojects of the Ubuntu Documentation Library"""
 
     subprojects = scan_subprojects()
     llms_urls = find_llms_txt(subprojects)
+    llms_urls = add_descriptions(llms_urls)
     llms_urls = add_custom_entries(EXTRA_ENTRIES_FILE, llms_urls)
     create_main_llms_txt(llms_urls)
 

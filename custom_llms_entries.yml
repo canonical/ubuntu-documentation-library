@@ -1,6 +1,9 @@
 ---
-#  example-grouping:
-#    heading: "Enterprise Store"
-#    versions:
-#      1.0.0: "https://ubuntu.com/enterprise-store/docs/"
-#      2.0.0: "NOTWORKING"
+projects:
+  - name: "Example Product"
+    versions:
+      1.0.0:
+        url: "https://example.com/URL"
+        description: "This is an optional string"
+      2.0.0:
+        url: "NOTWORKING"

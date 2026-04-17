@@ -3,10 +3,10 @@
 > The Ubuntu documentation library is an index of documentation for Ubuntu and related Canonical projects.
 
 ## Juju
-- [Juju 3.6 documentation](https://documentation.ubuntu.com/juju/3.6/llms.txt)
+- [Juju 3.6 documentation](https://documentation.ubuntu.com/juju/3.6/llms.txt): Juju is an open source orchestration engine for deploying, integrating, and managing applications across Kubernetes, VMs, and bare metal using software operators called charms.
 
 ## Ubuntu for Developers
-- [Ubuntu for Developers latest documentation](https://documentation.ubuntu.com/ubuntu-for-developers/llms.txt)
+- [Ubuntu for Developers latest documentation](https://documentation.ubuntu.com/ubuntu-for-developers/llms.txt): This documentation provides guidance for using the Ubuntu Desktop Linux distribution as a development platform. The guides focus on setting up and using the Ubuntu system as a workstation for developers, with an emphasis on the following toolchains: Python, Golang, Rust, GCC, Clang, .NET, and Java.
 
 ## Ubuntu Project
-- [Ubuntu Project latest documentation](https://documentation.ubuntu.com/project/llms.txt)
+- [Ubuntu Project latest documentation](https://documentation.ubuntu.com/project/llms.txt): This documentation provides guidance for contributors to and maintainers of the Ubuntu Linux distribution. It covers processes and concepts, as well as project governance and team workflows. There are instructions for packaging, merging, proposed migrations, autopkgtests, and many other procedures for maintaining the Ubuntu Archive and releasing the distribution.
