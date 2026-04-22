@@ -1,0 +1,9 @@
+---
+projects:
+  - name: "Example Product"
+    versions:
+      1.0.0:
+        url: "https://example.com/URL"
+        description: "This is an optional string"
+      2.0.0:
+        url: "NOTWORKING"

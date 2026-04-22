@@ -19,7 +19,7 @@ extensions = [
     ]
 
 exclude_patterns = ['_build', '.sphinx']
-html_extra_path = ["sitemap.xml", "robots.txt"]
+html_extra_path = ["doc-sitemap.xml", "robots.txt", "llms.txt"]
 
 # Set up redirects (https://documatt.gitlab.io/sphinx-reredirects/usage.html)
 # For example: "explanation/old-name.html": "../how-to/prettify.html",

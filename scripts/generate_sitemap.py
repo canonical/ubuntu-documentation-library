@@ -75,7 +75,7 @@ def main():
     # Write sitemap
     try:
         logging.debug("writing sitemap")
-        sitemap = open("sitemap.xml", "w")
+        sitemap = open("doc-sitemap.xml", "w")
         sitemap.write(f"{template_sitemap}\n</sitemapindex>")
     except Exception as e:
         raise e
