@@ -25,4 +25,5 @@ html_extra_path = ["doc-sitemap.xml", "robots.txt", "llms.txt"]
 # For example: "explanation/old-name.html": "../how-to/prettify.html",
 redirects = {
     "index": "https://docs.ubuntu.com",
+    "ibm/en/latest/ibm-how-to/find-ubuntu-images/": "https://documentation.ubuntu.com/ibm/ibm-how-to/find-ubuntu-images/",
 }
